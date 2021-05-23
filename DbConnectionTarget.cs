@@ -2,17 +2,17 @@
 namespace DiffExcel
 {
 
-        public static class DbConnection
+        public static class DbConnectionTarget
         {
-
-            public static IConfiguration Config { get; set; }
+        const string JsonDbConnectionConfig = "DbConnectionConfigTarget";
+        public static IConfiguration Config { get; set; }
 
 
             public static string DatabaseName
             {
                 get
                 {
-                    return Config.GetSection("DbConnectionConfig")["DatabaseName"];
+                    return Config.GetSection(JsonDbConnectionConfig)["DatabaseName"];
                 }
             }
 
@@ -21,7 +21,7 @@ namespace DiffExcel
             {
                 get
                 {
-                    return Config.GetSection("DbConnectionConfig")["UserName"];
+                    return Config.GetSection(JsonDbConnectionConfig)["UserName"];
                 }
             }
 
@@ -30,7 +30,7 @@ namespace DiffExcel
             {
                 get
                 {
-                    return Config.GetSection("DbConnectionConfig")["Password"];
+                    return Config.GetSection(JsonDbConnectionConfig)["Password"];
                 }
             }
 
@@ -39,7 +39,7 @@ namespace DiffExcel
             {
                 get
                 {
-                    return Config.GetSection("DbConnectionConfig")["ServerName"];
+                    return Config.GetSection(JsonDbConnectionConfig)["ServerName"];
                 }
             }
 
@@ -57,6 +57,14 @@ namespace DiffExcel
                 get
                 {
                     return ($"Server={ServerName};Database={DatabaseName};Trusted_Connection=True;");
+                }
+            }
+
+            public static string[] Tables
+            {
+                get
+                {
+                    return Config.GetSection("Info")["Tables"].Split(";");
                 }
             }
     }
