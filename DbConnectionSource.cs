@@ -60,13 +60,7 @@ namespace DiffExcel
                 }
             }
 
-            public static string[] Tables
-            {
-                get
-                {
-                    return Config.GetSection("Info")["Tables"].Split(";");
-                }
-            }
+
     }
 
 }

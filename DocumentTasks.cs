@@ -14,12 +14,24 @@ namespace DiffExcel
         public static void CreateExcelWithTableName(string table)
         {
             var wb = new XLWorkbook();
-            using SqlConnection connection = new(DbConnectionTarget.ConnectionStringTrusted);
-            using var da = new SqlDataAdapter($"select * from {table}", connection);
-            DataTable datatable = new();
-            da.Fill(datatable);
-            datatable.TableName = table;
-            wb.Worksheets.Add(datatable);
+
+            // data of first table
+            using SqlConnection connection_first = new(DbConnectionSource.ConnectionStringTrusted);
+            using var da_first = new SqlDataAdapter($"select * from {table}", connection_first);
+            DataTable datatable_first = new();
+            da_first.Fill(datatable_first);
+
+            // data of second table 
+            using SqlConnection connection_second = new(DbConnectionTarget.ConnectionStringTrusted);
+            using var da_second = new SqlDataAdapter($"select * from {table}", connection_second);
+            DataTable datatable_second = new();
+            da_second.Fill(datatable_second);
+            
+            // create Excel
+            datatable_first.TableName = $"Source_{table}";
+            datatable_second.TableName = $"Target_{table}";
+            wb.Worksheets.Add(datatable_first);
+            wb.Worksheets.Add(datatable_second);
             wb.SaveAs($"{table}.xlsx");
         }
     }

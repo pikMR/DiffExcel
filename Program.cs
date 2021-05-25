@@ -11,13 +11,21 @@ namespace DiffExcel
     {
         static void Main(string[] args)
         {
-            ConfigurationDB();
-            DocumentTasks.CreateExcelWithTableName(DbConnectionTarget.Tables[0]);
+            Config();
+            DocumentTasks.CreateExcelWithTableName(Configuration.Tables[0]);
         }
 
-        public static void ConfigurationDB()
+        public static void Config()
         {
+            Configuration.Config = new ConfigurationBuilder()
+                .AddJsonFile(Utils.getRootPath("appsettings.json"))
+                .Build();
+
             DbConnectionTarget.Config = new ConfigurationBuilder()
+                .AddJsonFile(Utils.getRootPath("appsettings.json"))
+                .Build();
+
+            DbConnectionSource.Config = new ConfigurationBuilder()
                 .AddJsonFile(Utils.getRootPath("appsettings.json"))
                 .Build();
         }
