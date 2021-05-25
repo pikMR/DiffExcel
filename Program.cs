@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ClosedXML.Excel;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace DiffExcel
 {
@@ -9,8 +12,7 @@ namespace DiffExcel
         static void Main(string[] args)
         {
             ConfigurationDB();
-            GetConnectionDBOK();
-            GetDataDBOK();
+            DocumentTasks.CreateExcelWithTableName(DbConnectionTarget.Tables[0]);
         }
 
         public static void ConfigurationDB()
@@ -19,47 +21,5 @@ namespace DiffExcel
                 .AddJsonFile(Utils.getRootPath("appsettings.json"))
                 .Build();
         }
-
-        public static void GetConnectionDBOK()
-        {
-            using (SqlConnection connection = new SqlConnection(
-               DbConnectionTarget.ConnectionStringTrusted))
-            {
-                SqlCommand command = new SqlCommand("select * from Person.BusinessEntity", connection);
-                command.Connection.Open();
-                command.ExecuteNonQuery();
-            }
-        }
-
-        public static void GetDataDBOK()
-        {
-            SqlDataReader rdr = null;
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(
-               DbConnectionTarget.ConnectionStringTrusted))
-                {
-                    SqlCommand command = new SqlCommand("select * from Person.BusinessEntity", connection);
-                    command.Connection.Open();
-                    rdr = command.ExecuteReader();
-                    // print the CustomerID of each record
-                    while (rdr.Read())
-                    {
-                        Console.WriteLine(rdr[0]);
-                    }
-                    //command.ExecuteNonQuery();
-                }
-            }
-            finally
-            {
-                // close the reader
-                if (rdr != null)
-                {
-                    rdr.Close();
-                }
-            }
-        }
-
     }
 }
