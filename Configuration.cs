@@ -17,5 +17,13 @@ namespace DiffExcel
                 return Config.GetSection("Info")["Tables"].Split(";");
             }
         }
+
+        public static string ExcelName
+        {
+            get
+            {
+                return Config.GetSection("Excel")["Path"];
+            }
+        }
     }
 }

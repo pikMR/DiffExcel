@@ -11,8 +11,9 @@ namespace DiffExcel
     {
         static void Main(string[] args)
         {
+            DocumentTasks dt = new DocumentTasks();
             Config();
-            DocumentTasks.CreateExcelWithTableName(Configuration.Tables[0]);
+            dt.CreateExcel();
         }
 
         public static void Config()
