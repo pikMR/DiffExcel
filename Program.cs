@@ -1,17 +1,12 @@
-﻿using ClosedXML.Excel;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace DiffExcel
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            DocumentTasks dt = new DocumentTasks();
+            var dt = new DocumentTasks();
             Config();
             dt.CreateExcel();
         }
@@ -19,15 +14,15 @@ namespace DiffExcel
         public static void Config()
         {
             Configuration.Config = new ConfigurationBuilder()
-                .AddJsonFile(Utils.getRootPath("appsettings.json"))
+                .AddJsonFile(Utils.GetRootPath("appsettings.json"))
                 .Build();
 
             DbConnectionTarget.Config = new ConfigurationBuilder()
-                .AddJsonFile(Utils.getRootPath("appsettings.json"))
+                .AddJsonFile(Utils.GetRootPath("appsettings.json"))
                 .Build();
 
             DbConnectionSource.Config = new ConfigurationBuilder()
-                .AddJsonFile(Utils.getRootPath("appsettings.json"))
+                .AddJsonFile(Utils.GetRootPath("appsettings.json"))
                 .Build();
         }
     }
