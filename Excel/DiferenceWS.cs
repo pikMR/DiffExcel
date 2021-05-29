@@ -1,4 +1,4 @@
-﻿namespace DiffExcel
+﻿namespace DiffExcel.Excel
 {
     public class DiferenceWs
     {

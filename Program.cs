@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DiffExcel.Excel;
+using DiffExcel.Settings;
+using Microsoft.Extensions.Configuration;
 
 namespace DiffExcel
 {
@@ -22,6 +24,7 @@ namespace DiffExcel
                 .Build();
 
             DbConnectionSource.Config = new ConfigurationBuilder()
+                // ReSharper disable once StringLiteralTypo
                 .AddJsonFile(Utils.GetRootPath("appsettings.json"))
                 .Build();
         }

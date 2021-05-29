@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using DiffExcel.Settings;
 
-namespace DiffExcel
+namespace DiffExcel.Excel
 {
     public class DocumentTasks
     {
@@ -36,30 +37,35 @@ namespace DiffExcel
         /// <exception cref="System.Exception">Thrown when Schema of tables are diferent</exception>
         private List<DiferenceWs> CreateWorksheets(XLWorkbook wb, string nameTable)
         {
-            // data of first table
-            using SqlConnection connectionFirst = new(DbConnectionSource.ConnectionStringTrusted);
-            using var daFirst = new SqlDataAdapter($"select * from {nameTable}", connectionFirst);
-            DataTable datatableFirst = new();
-            daFirst.Fill(datatableFirst);
-
-            // data of second table 
-            using SqlConnection connectionSecond = new(DbConnectionTarget.ConnectionStringTrusted);
-            using var daSecond = new SqlDataAdapter($"select * from {nameTable}", connectionSecond);
-            DataTable datatableSecond = new();
-            daSecond.Fill(datatableSecond);
+            var datatableFirst = GetDataTable(
+                DbConnectionSource.IsTrusted ? DbConnectionSource.ConnectionStringTrusted : DbConnectionSource.ConnectionString,
+                $"select * from {nameTable}", 
+                $"Source_{nameTable}");
+            var datatableSecond = GetDataTable(
+                DbConnectionTarget.IsTrusted ? DbConnectionTarget.ConnectionStringTrusted : DbConnectionTarget.ConnectionString,
+                $"select * from {nameTable}",
+                $"Target_{nameTable}");
 
             // create 2 new WorkSheets for comparation
-            datatableFirst.TableName = $"Source_{nameTable}";
-            datatableSecond.TableName = $"Target_{nameTable}";
             wb.Worksheets.Add(datatableFirst);
             wb.Worksheets.Add(datatableSecond);
 
             // Compare last
-            var compareWs = wb.Worksheets.TakeLast(2);
+            var compareWs = wb.Worksheets.TakeLast(2).ToList();
             var ws1 = compareWs.ElementAt(0);
             var ws2 = compareWs.ElementAt(1);
 
             return PaintDifferences(ws1,ws2);
+        }
+
+        private static DataTable GetDataTable(string connectionString, string command,string nameWs)
+        {
+            using SqlConnection connection = new(connectionString);
+            using var daFirst = new SqlDataAdapter(command, connection);
+            DataTable dt = new();
+            daFirst.Fill(dt);
+            dt.TableName = nameWs;
+            return dt;
         }
 
         private List<DiferenceWs> PaintDifferences(IXLWorksheet ws1, IXLWorksheet ws2)
@@ -73,16 +79,15 @@ namespace DiffExcel
             if (ws1CountCols != ws2CountCols && ws1CountRows != ws2CountRows)
                 throw new Exception($"number cols/rows are different for worksheet target {ws1.Name} and worksheet source {ws2.Name} , table : "+TableName);
 
-            for(int irow = 1; irow <= ws1CountRows; irow++)
+            for(var irow = 1; irow <= ws1CountRows; irow++)
             {
-                for (int icol = 1; icol <= ws1CountCols; icol++)
+                for (var icol = 1; icol <= ws1CountCols; icol++)
                 {
-                    if ((ws1.Cell(irow, icol).GetValue<string>() != ws2.Cell(irow, icol).GetValue<string>()))
-                    {
-                        ws1.Cell(irow, icol).Style.Fill.BackgroundColor = XLColor.OrangePeel;
+                    if ((ws1.Cell(irow, icol).GetValue<string>() == ws2.Cell(irow, icol).GetValue<string>())) continue;
 
-                        diffList.Add(new DiferenceWs(irow, icol, ws1.Cell(irow, icol).GetValue<string>(), ws2.Cell(irow, icol).GetValue<string>(), TableName));
-                    }
+                    ws1.Cell(irow, icol).Style.Fill.BackgroundColor = XLColor.OrangePeel;
+                    ws2.Cell(irow, icol).Style.Fill.BackgroundColor = XLColor.OrangePeel;
+                    diffList.Add(new DiferenceWs(irow, icol, ws1.Cell(irow, icol).GetValue<string>(), ws2.Cell(irow, icol).GetValue<string>(), TableName));
                 }
             }
             return diffList;

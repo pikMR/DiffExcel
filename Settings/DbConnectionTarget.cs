@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-namespace DiffExcel
+namespace DiffExcel.Settings
 {
-
-        public static class DbConnectionTarget
+    public static class DbConnectionTarget
         {
 
         private const string JsonDbConnectionConfig = "DbConnectionConfigTarget";
@@ -13,6 +12,7 @@ namespace DiffExcel
         public static string ServerName => Config.GetSection(JsonDbConnectionConfig)["ServerName"];
         public static string ConnectionString => ($"Server={ServerName};Database={DatabaseName};User ID={UserName};Password={Password};Trusted_Connection=False;MultipleActiveResultSets=true;");
         public static string ConnectionStringTrusted => ($"Server={ServerName};Database={DatabaseName};Trusted_Connection=True;");
-        }
+        public static bool IsTrusted => bool.Parse(Config.GetSection(JsonDbConnectionConfig)["Trusted"]);
+    }
 
 }

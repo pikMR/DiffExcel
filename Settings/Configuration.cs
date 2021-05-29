@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace DiffExcel
+namespace DiffExcel.Settings
 {
     public static class Configuration
     {
